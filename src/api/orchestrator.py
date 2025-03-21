@@ -3,6 +3,7 @@ from prompty.tracer import trace
 from pydantic import BaseModel, Field
 import logging
 import json
+import time
 
 # agents
 from agents.researcher import researcher
@@ -76,9 +77,13 @@ def create(research_context, product_context, assignment_context, evaluate=False
     research_result = researcher.research(research_context, feedback)
     yield complete_message("researcher", research_result)
 
+    time.sleep(1)  # Add delay to avoid rate limit
+
     yield start_message("marketing")
     product_result = product.find_products(product_context)
     yield complete_message("marketing", product_result)
+
+    time.sleep(1)  # Add delay to avoid rate limit
 
     yield start_message("writer")
     yield complete_message("writer", {"start": True})
@@ -120,6 +125,8 @@ def create(research_context, product_context, assignment_context, evaluate=False
 
         research_result = researcher.research(research_context, researchFeedback)
         yield complete_message("researcher", research_result)
+
+        time.sleep(1)  # Add delay to avoid rate limit
 
         yield start_message("writer")
         yield complete_message("writer", {"start": True})
